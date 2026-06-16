@@ -30,7 +30,7 @@ export const obterDicaIA = functions.onRequest({
 
         const genAI = new GoogleGenerativeAI(apiKey);
         // Usando o modelo estável recomendado
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); 
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
         
         // Pegando os dados financeiros enviados pelo seu front-end
         const { modo, saldo, categorias } = req.body;
