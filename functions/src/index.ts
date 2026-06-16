@@ -39,9 +39,9 @@ export const obterDicaIA = functions.onRequest({
 
        const genAI = new GoogleGenerativeAI(apiKey);
         
-        // Usando a nomenclatura exata exigida pelas versões estáveis da SDK moderna
+        // Com a SDK atualizada, usamos a string limpa de produção
         const model = genAI.getGenerativeModel({
-            model: "gemini-1.5-flash-latest"
+            model: "gemini-1.5-flash"
         });
         
        // Pegando os dados financeiros enviados pelo seu front-end
