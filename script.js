@@ -152,7 +152,8 @@ async function atualizarDicaComIA(dadosFinanceiros) {
     window.iaProcessando = true;
 
     try {
-        const response = await fetch("https://us-central1-vida-rica-app-bc076.cloudfunctions.net/asaaswebhook", {
+        // CORREÇÃO AQUI: Mudamos o final da URL de asaaswebhook para obterDicaIA
+        const response = await fetch("https://us-central1-vida-rica-app-bc076.cloudfunctions.net/obterDicaIA", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(dadosFinanceiros)
