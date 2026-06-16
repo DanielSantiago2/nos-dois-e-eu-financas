@@ -153,7 +153,7 @@ async function atualizarDicaComIA(dadosFinanceiros) {
 
     try {
         // CORREÇÃO: Atualizado para a nova URL da 2ª Geração (Cloud Run)
-        const response = await fetch("https://obterdicaia-xvab6uz5da-uc.a.run.app", {
+        const response = await fetch("https://obterdicaia-xvab6uz5da-rj.a.run.app", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(dadosFinanceiros)

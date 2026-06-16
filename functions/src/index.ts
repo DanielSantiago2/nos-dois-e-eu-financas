@@ -8,6 +8,7 @@ admin.initializeApp();
  * 1. ROTA EXCLUSIVA PARA A IA (CHAMADA PELO SEU APP)
  */
 export const obterDicaIA = functions.onRequest({ 
+    region: "southamerica-east1", // Mudamos para o servidor de São Paulo
     secrets: ["GEMINI_KEY"],
     cors: true 
 }, async (req, res) => {
