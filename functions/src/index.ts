@@ -35,16 +35,22 @@ export const obterDicaIA = functions.onRequest({
             model: "models/gemini-1.5-flash"
         });
         
+       // Pegando os dados financeiros enviados pelo seu front-end
         const { modo, saldo, categorias } = req.body;
 
         console.log(`[Nova Versao] Solicitando dica de IA para perfil: ${modo || 'Geral'}`);
 
-        // Forçamos a conversão do saldo para garantir que seja interpretado como número limpo no prompt
+        // Forçamos a conversão do saldo para garantir que seja interpretado como número limpo
         const saldoNumerico = parseFloat(saldo) || 0;
+        
+        // Proteção extra: Garante que categorias seja uma string válida mesmo se vier vazio
+        const categoriasTexto = categorias && Object.keys(categorias).length > 0 
+            ? JSON.stringify(categorias) 
+            : "Nenhuma despesa cadastrada ainda";
 
         const prompt = `Aja como mentor financeiro do app Nós Dois & Eu. 
         Perfil: ${modo || 'Geral'}. Saldo Atual: R$ ${saldoNumerico.toFixed(2)}. 
-        Gastos por categoria: ${JSON.stringify(categorias || {})}.
+        Gastos por categoria: ${categoriasTexto}.
         Com base nesses dados, dê uma dica financeira muito curta (no máximo uma frase) e motivadora para este perfil.`;
 
         const result = await model.generateContent(prompt);
