@@ -39,8 +39,9 @@ export const obterDicaIA = functions.onRequest({
 
         const genAI = new GoogleGenerativeAI(apiKey);
         
+        // Mudamos para o modelo estável que aceita a rota direto
         const model = genAI.getGenerativeModel({
-            model: "models/gemini-1.5-flash"
+            model: "gemini-pro"
         });
         
        // Pegando os dados financeiros enviados pelo seu front-end
