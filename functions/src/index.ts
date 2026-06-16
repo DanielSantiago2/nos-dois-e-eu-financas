@@ -28,9 +28,13 @@ export const obterDicaIA = functions.onRequest({
             throw new Error("A chave GEMINI_KEY não foi configurada nos secrets do Firebase.");
         }
 
+       // Inicialização limpa e padrão aceita por todas as versões do SDK
         const genAI = new GoogleGenerativeAI(apiKey);
+        
         // Usando o modelo estável recomendado
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+        const model = genAI.getGenerativeModel({
+            model: "models/gemini-1.5-flash"
+        });
         
         // Pegando os dados financeiros enviados pelo seu front-end
         const { modo, saldo, categorias } = req.body;
