@@ -39,7 +39,7 @@ export const obterDicaIA = functions.onRequest({
         // Pegando os dados financeiros enviados pelo seu front-end
         const { modo, saldo, categorias } = req.body;
 
-        console.log(`Processando dica de IA para perfil: ${modo || 'Geral'}`);
+        console.log(`[Nova Versao] Solicitando dica de IA para perfil: ${modo || 'Geral'}`);
 
         const prompt = `Aja como mentor financeiro do app Nós Dois & Eu. 
         Perfil: ${modo || 'Geral'}. Saldo Atual: R$ ${saldo || '0'}. 
