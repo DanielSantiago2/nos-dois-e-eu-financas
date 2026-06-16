@@ -28,33 +28,37 @@ export const obterDicaIA = functions.onRequest({
             throw new Error("A chave GEMINI_KEY não foi configurada nos secrets do Firebase.");
         }
 
-       // Inicialização limpa e padrão aceita por todas as versões do SDK
         const genAI = new GoogleGenerativeAI(apiKey);
         
-        // Usando o modelo estável recomendado
         const model = genAI.getGenerativeModel({
             model: "models/gemini-1.5-flash"
         });
         
-        // Pegando os dados financeiros enviados pelo seu front-end
         const { modo, saldo, categorias } = req.body;
 
         console.log(`[Nova Versao] Solicitando dica de IA para perfil: ${modo || 'Geral'}`);
 
+        // Forçamos a conversão do saldo para garantir que seja interpretado como número limpo no prompt
+        const saldoNumerico = parseFloat(saldo) || 0;
+
         const prompt = `Aja como mentor financeiro do app Nós Dois & Eu. 
-        Perfil: ${modo || 'Geral'}. Saldo Atual: R$ ${saldo || '0'}. 
+        Perfil: ${modo || 'Geral'}. Saldo Atual: R$ ${saldoNumerico.toFixed(2)}. 
         Gastos por categoria: ${JSON.stringify(categorias || {})}.
         Com base nesses dados, dê uma dica financeira muito curta (no máximo uma frase) e motivadora para este perfil.`;
 
         const result = await model.generateContent(prompt);
         
-        // Garante que a resposta veio corretamente
-        if (!result.response || !result.response.text) {
-            throw new Error("A API do Gemini não retornou um texto válido.");
+        // Validação correta de acordo com a tipagem da SDK do Gemini
+        if (!result.response || typeof result.response.text !== "function") {
+            throw new Error("A API do Gemini não retornou uma função de texto válida.");
         }
         
+        // Extração correta do texto chamando o método contido em response
         const text = result.response.text();
         
+        if (!text) {
+            throw new Error("O texto retornado pela IA veio vazio.");
+        }
         res.status(200).json({ dica: text });
 
     } catch (error: any) {

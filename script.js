@@ -137,7 +137,7 @@ async function carregarDados(queryRef, isSnapshot = false) {
     if (totalR > 0 || totalD > 0) {
         const resumoParaIA = {
             modo: usuarioDados.modo || "solteiro",
-            saldo: (totalR - totalD).toFixed(2),
+            saldo: Number(totalR - totalD), // Enviando como número puro para não quebrar a API
             categorias: catMap
         };
         atualizarDicaComIA(resumoParaIA);
