@@ -152,15 +152,14 @@ async function atualizarDicaComIA(dadosFinanceiros) {
     window.iaProcessando = true;
 
     try {
-        // CORREÇÃO AQUI: Mudamos o final da URL de asaaswebhook para obterDicaIA
-        const response = await fetch("https://us-central1-vida-rica-app-bc076.cloudfunctions.net/obterDicaIA", {
+        // CORREÇÃO: Atualizado para a nova URL da 2ª Geração (Cloud Run)
+        const response = await fetch("https://obterdicaia-xvab6uz5da-uc.a.run.app", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(dadosFinanceiros)
         });
 
         if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
-
         const data = await response.json();
         painelDica.innerText = data.dica || "Mantenha o foco!";
     } catch (erro) {
