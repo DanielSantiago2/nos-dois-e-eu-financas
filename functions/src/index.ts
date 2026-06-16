@@ -8,10 +8,18 @@ admin.initializeApp();
  * 1. ROTA EXCLUSIVA PARA A IA (CHAMADA PELO SEU APP)
  */
 export const obterDicaIA = functions.onRequest({ 
+    
     region: "southamerica-east1", // Mudamos para o servidor de São Paulo
     secrets: ["GEMINI_KEY"],
     cors: true 
 }, async (req, res) => {
+    
+    // TESTE TEMPORÁRIO DE DIAGNÓSTICO
+        if (!process.env.GEMINI_KEY) {
+            console.error("❌ ERRO GRAVE: A variável GEMINI_KEY veio completamente VAZIA do servidor!");
+        } else {
+            console.log(`✅ Chave detectada! Ela começa com: ${process.env.GEMINI_KEY.substring(0, 5)}... e tem tamanho ${process.env.GEMINI_KEY.length}`);
+        }
     
     // Configuração de CORS para o Front-end conseguir acessar
     res.set("Access-Control-Allow-Origin", "*");
