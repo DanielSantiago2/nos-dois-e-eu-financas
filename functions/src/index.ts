@@ -23,7 +23,7 @@ export const obterDicaIA = functions.onRequest({
     try {
         // Inicializa a SDK passando a chave e o modelo conforme a documentação oficial do Google
         const genAI = new GoogleGenerativeAI(process.env.API_KEY_GEMINI);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
         
         const modo = req.body?.modo || 'Geral';
         const saldo = req.body?.saldo || 0;
