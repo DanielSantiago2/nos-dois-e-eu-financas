@@ -13,7 +13,6 @@ export const obterDicaIA = functions.onRequest({
 }, async (req, res) => {
     
     // Verificação de segurança no log do servidor
-   // Mude de process.env.GEMINI_KEY para process.env.API_KEY_GEMINI
     if (!process.env.API_KEY_GEMINI) {
         console.error("❌ ERRO: A variável API_KEY_GEMINI não foi carregada do arquivo .env!");
         res.status(500).json({ error: "Configuração de ambiente ausente no servidor." });
@@ -24,8 +23,12 @@ export const obterDicaIA = functions.onRequest({
         // Carrega a chave de forma segura a partir do arquivo .env local
         const apiKey = process.env.API_KEY_GEMINI; 
         
+        // Inicializa a SDK apontando diretamente para a API estável (v1)
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+        const model = genAI.getGenerativeModel(
+            { model: "gemini-1.5-flash" }, 
+            { apiVersion: "v1" }
+        );
         
         const modo = req.body?.modo || 'Geral';
         const saldo = req.body?.saldo || 0;
