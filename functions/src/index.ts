@@ -25,7 +25,7 @@ export const obterDicaIA = functions.onRequest({
         const apiKey = process.env.API_KEY_GEMINI; 
         
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
         
         const modo = req.body?.modo || 'Geral';
         const saldo = req.body?.saldo || 0;
