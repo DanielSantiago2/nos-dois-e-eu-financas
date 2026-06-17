@@ -8,43 +8,30 @@ admin.initializeApp();
  * 1. ROTA EXCLUSIVA PARA A IA (CHAMADA PELO SEU APP)
  */
 export const obterDicaIA = functions.onRequest({ 
-    
-    region: "southamerica-east1", // Mudamos para o servidor de São Paulo
+    region: "southamerica-east1", // Servidor de São Paulo
     secrets: ["GEMINI_KEY"],
     cors: true 
 }, async (req, res) => {
     
     // TESTE TEMPORÁRIO DE DIAGNÓSTICO
-        if (!process.env.GEMINI_KEY) {
-            console.error("❌ ERRO GRAVE: A variável GEMINI_KEY veio completamente VAZIA do servidor!");
-        } else {
-            console.log(`✅ Chave detectada! Ela começa com: ${process.env.GEMINI_KEY.substring(0, 5)}... e tem tamanho ${process.env.GEMINI_KEY.length}`);
-        }
-    
-    // Configuração de CORS para o Front-end conseguir acessar
-    res.set("Access-Control-Allow-Origin", "*");
-    res.set("Access-Control-Allow-Methods", "POST, OPTIONS");
-    res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-    if (req.method === "OPTIONS") {
-        res.status(204).send("");
-        return;
+    if (!process.env.GEMINI_KEY) {
+        console.error("❌ ERRO GRAVE: A variável GEMINI_KEY veio completamente VAZIA do servidor!");
+        res.status(500).json({ error: "Ambiente não configurado no Cloud Secrets." });
+        return; 
+    } else {
+        console.log(`✅ Chave detectada! Ela começa com: ${process.env.GEMINI_KEY.substring(0, 5)}... e tem tamanho ${process.env.GEMINI_KEY.length}`);
     }
 
     try {
         const apiKey = process.env.GEMINI_KEY;
-        if (!apiKey) {
-            throw new Error("A chave GEMINI_KEY não foi configurada nos secrets do Firebase.");
-        }
-
-       const genAI = new GoogleGenerativeAI(apiKey);
+        const genAI = new GoogleGenerativeAI(apiKey);
         
         // Com a SDK atualizada, usamos a string limpa de produção
         const model = genAI.getGenerativeModel({
             model: "gemini-1.5-flash"
         });
         
-       // Pegando os dados financeiros enviados pelo seu front-end
+        // Pegando os dados financeiros enviados pelo seu front-end
         const { modo, saldo, categorias } = req.body;
 
         console.log(`[Nova Versao] Solicitando dica de IA para perfil: ${modo || 'Geral'}`);
@@ -75,6 +62,7 @@ export const obterDicaIA = functions.onRequest({
         if (!text) {
             throw new Error("O texto retornado pela IA veio vazio.");
         }
+        
         res.status(200).json({ dica: text });
 
     } catch (error: any) {
@@ -110,10 +98,9 @@ export const asaaswebhook = functions.onRequest({
 
             console.log(`Usuário ${userId} atualizado para Premium com sucesso!`);
             res.status(200).send("Pagamento Processado");
-            return; // Encerra a execução aqui
+            return; 
         }
 
-        // Se receber outro evento do Asaas que não seja confirmação, apenas avisa que recebeu
         res.status(200).send("Evento recebido, mas não processado (não era confirmação de pagamento).");
 
     } catch (error: any) {
