@@ -7,8 +7,8 @@ admin.initializeApp();
 /**
  * 1. ROTA EXCLUSIVA PARA A IA (CHAMADA PELO SEU APP)
  */
-export const obterDicaFinanceiraIA = functions.onRequest({ 
-    region: "southamerica-east1",
+export const obterDicaIA = functions.onRequest({ 
+    region: "southamerica-east1", // Servidor de São Paulo
     secrets: ["GEMINI_KEY"],
     cors: true 
 }, async (req, res) => {
@@ -18,45 +18,38 @@ export const obterDicaFinanceiraIA = functions.onRequest({
         console.error("❌ ERRO GRAVE: A variável GEMINI_KEY veio completamente VAZIA do servidor!");
         res.status(500).json({ error: "Ambiente não configurado no Cloud Secrets." });
         return; 
-    } else {
-        console.log(`✅ Chave detectada! Ela começa com: ${process.env.GEMINI_KEY.substring(0, 5)}... e tem tamanho ${process.env.GEMINI_KEY.length}`);
     }
 
     try {
         const apiKey = process.env.GEMINI_KEY;
         const genAI = new GoogleGenerativeAI(apiKey);
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
         
-        // Com a SDK atualizada, usamos a string limpa de produção
-        const model = genAI.getGenerativeModel({
-            model: "gemini-1.5-flash"
-        });
-        
-        // Pegando os dados financeiros enviados pelo seu front-end
-        const { modo, saldo, categorias } = req.body;
+        // Pegando os dados de forma segura, garantindo fallback para objetos vazios
+        const modo = req.body?.modo || 'Geral';
+        const saldo = req.body?.saldo || 0;
+        const categorias = req.body?.categorias || {};
 
-        console.log(`[Nova Versao] Solicitando dica de IA para perfil: ${modo || 'Geral'}`);
+        console.log(`[Nova Versao] Solicitando dica de IA para perfil: ${modo}`);
 
-        // Forçamos a conversão do saldo para garantir que seja interpretado como número limpo
-        const saldoNumerico = parseFloat(saldo) || 0;
+        const saldoNumerico = parseFloat(saldo as any) || 0;
         
-        // Proteção extra: Garante que categorias seja uma string válida mesmo se vier vazio
-        const categoriasTexto = categorias && Object.keys(categorias).length > 0 
+        // Validação blindada: Só transforma em string se categorias for um objeto real
+        const categoriasTexto = (categorias && typeof categorias === 'object' && Object.keys(categorias).length > 0)
             ? JSON.stringify(categorias) 
             : "Nenhuma despesa cadastrada ainda";
 
         const prompt = `Aja como mentor financeiro do app Nós Dois & Eu. 
-        Perfil: ${modo || 'Geral'}. Saldo Atual: R$ ${saldoNumerico.toFixed(2)}. 
+        Perfil: ${modo}. Saldo Atual: R$ ${saldoNumerico.toFixed(2)}. 
         Gastos por categoria: ${categoriasTexto}.
         Com base nesses dados, dê uma dica financeira muito curta (no máximo uma frase) e motivadora para este perfil.`;
 
         const result = await model.generateContent(prompt);
         
-        // Validação correta de acordo com a tipagem da SDK do Gemini
         if (!result.response || typeof result.response.text !== "function") {
             throw new Error("A API do Gemini não retornou uma função de texto válida.");
         }
         
-        // Extração correta do texto chamando o método contido em response
         const text = result.response.text();
         
         if (!text) {
