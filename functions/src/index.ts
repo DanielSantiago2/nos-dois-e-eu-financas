@@ -10,6 +10,7 @@ admin.initializeApp();
 export const obterDicaIA = functions.onRequest({ 
     region: "southamerica-east1", // Servidor de São Paulo
     cors: true 
+    // 🌟 CORREÇÃO: Propriedade 'params' removida para sanar o erro de compilação TS2353
 }, async (req, res) => {
     
     // Verificação de segurança no log do servidor
@@ -81,12 +82,13 @@ export const asaaswebhook = functions.onRequest({
                 return;
             }
 
-            await admin.firestore().collection("usuarios").doc(userId).update({
+            // Alinhado com o db.js do front-end para atualizar a coleção correta
+            await admin.firestore().collection("users").doc(userId).update({
                 plano: "premium",
                 trialFim: null,
             });
 
-            console.log(`Usuário ${userId} atualizado para Premium com sucesso!`);
+            console.log(`Usuário ${userId} atualizado para Premium com sucesso na coleção 'users'!`);
             res.status(200).send("Pagamento Processado");
             return; 
         }
