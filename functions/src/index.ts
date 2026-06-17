@@ -9,7 +9,7 @@ admin.initializeApp();
  */
 export const obterDicaIA = functions.onRequest({ 
     region: "southamerica-east1", // Servidor de São Paulo
-    cors: true // Mantemos sem a linha secrets para contornar a trava de faturamento do plano gratuito
+    cors: true 
 }, async (req, res) => {
     
     // Verificação de segurança no log do servidor
@@ -20,15 +20,9 @@ export const obterDicaIA = functions.onRequest({
     }
 
     try {
-        // Carrega a chave de forma segura a partir do arquivo .env local
-        const apiKey = process.env.API_KEY_GEMINI; 
-        
-        // Inicializa a SDK apontando diretamente para a API estável (v1)
-        const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel(
-            { model: "gemini-1.5-flash" }, 
-            { apiVersion: "v1" }
-        );
+        // Inicializa a SDK passando a chave e o modelo conforme a documentação oficial do Google
+        const genAI = new GoogleGenerativeAI(process.env.API_KEY_GEMINI);
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
         
         const modo = req.body?.modo || 'Geral';
         const saldo = req.body?.saldo || 0;
