@@ -9,32 +9,32 @@ admin.initializeApp();
  */
 export const obterDicaIA = functions.onRequest({ 
     region: "southamerica-east1", // Servidor de São Paulo
-    secrets: ["GEMINI_KEY"],
-    cors: true 
+    cors: true // Mantemos sem a linha secrets para contornar a trava de faturamento do plano gratuito
 }, async (req, res) => {
     
-    // TESTE TEMPORÁRIO DE DIAGNÓSTICO
-    if (!process.env.GEMINI_KEY) {
-        console.error("❌ ERRO GRAVE: A variável GEMINI_KEY veio completamente VAZIA do servidor!");
-        res.status(500).json({ error: "Ambiente não configurado no Cloud Secrets." });
-        return; 
+    // Verificação de segurança no log do servidor
+   // Mude de process.env.GEMINI_KEY para process.env.API_KEY_GEMINI
+    if (!process.env.API_KEY_GEMINI) {
+        console.error("❌ ERRO: A variável API_KEY_GEMINI não foi carregada do arquivo .env!");
+        res.status(500).json({ error: "Configuração de ambiente ausente no servidor." });
+        return;
     }
 
     try {
-        const apiKey = process.env.GEMINI_KEY;
+        // Carrega a chave de forma segura a partir do arquivo .env local
+        const apiKey = process.env.API_KEY_GEMINI; 
+        
         const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
         
-        // Pegando os dados de forma segura, garantindo fallback para objetos vazios
         const modo = req.body?.modo || 'Geral';
         const saldo = req.body?.saldo || 0;
         const categorias = req.body?.categorias || {};
 
-        console.log(`[Nova Versao] Solicitando dica de IA para perfil: ${modo}`);
+        console.log(`[Nova Versao] Solicitando dica de IA via .env para perfil: ${modo}`);
 
         const saldoNumerico = parseFloat(saldo as any) || 0;
         
-        // Validação blindada: Só transforma em string se categorias for um objeto real
         const categoriasTexto = (categorias && typeof categorias === 'object' && Object.keys(categorias).length > 0)
             ? JSON.stringify(categorias) 
             : "Nenhuma despesa cadastrada ainda";
